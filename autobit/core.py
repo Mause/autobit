@@ -1,3 +1,4 @@
+import re
 import json
 from functools import lru_cache
 from operator import itemgetter
@@ -5,7 +6,6 @@ from operator import itemgetter
 import attr
 import requests
 from slimit.parser import Parser
-from lxml.etree import fromstring
 
 
 def _load(val):
@@ -41,10 +41,9 @@ class Client:
             return
 
         r = self.session.get(self.base_url + 'token.html')
-        self.session.params['token'] = (
-            fromstring(r.text)
-            .xpath('.//div/text()')[0]
-        )
+
+        # this is bad practice, but is only used here
+        self.session.params['token'] = re.search(r"'>(.*?)</", r.text).group(1)
 
     def get(self, params):
         self.refresh_token()
