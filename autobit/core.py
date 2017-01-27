@@ -36,7 +36,7 @@ class Client:
         if not self.base_url.endswith('/gui/'):
             self.base_url += '/gui/'
 
-    def refresh_token(self):
+    def _ensure_token(self):
         if 'token' in self.session.params:
             return
 
@@ -46,7 +46,7 @@ class Client:
         self.session.params['token'] = re.search(r"'>(.*?)</", r.text).group(1)
 
     def get(self, params):
-        self.refresh_token()
+        self._ensure_token()
         r = self.session.get(self.base_url, params=params).json()
         r.pop('build')
         return r
