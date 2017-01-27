@@ -3,7 +3,6 @@ import json
 from functools import lru_cache
 from operator import itemgetter
 
-import attr
 import requests
 from slimit.parser import Parser
 
@@ -22,19 +21,16 @@ class BittorrentError(Exception):
     pass
 
 
-@attr.s
 class Client:
-    base_url = attr.ib()
-    session = attr.ib(default=None)
-    auth = attr.ib(default=None)
+    def __init__(self, base_url, session=None, auth=None):
+        self.session = session or requests.Session()
+        if auth:
+            self.session.auth = auth
 
-    def __attrs_post_init__(self):
-        self.session = self.session or requests.Session()
-        if self.auth:
-            self.session.auth = self.auth
+        if not base_url.endswith('/gui/'):
+            base_url += '/gui/'
 
-        if not self.base_url.endswith('/gui/'):
-            self.base_url += '/gui/'
+        self.base_url = base_url
 
     def _ensure_token(self):
         if 'token' in self.session.params:
