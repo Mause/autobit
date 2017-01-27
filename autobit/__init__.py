@@ -9,12 +9,12 @@ pprint = lambda obj: print(unidecode(pformat(obj)))
 
 
 class OClient():
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, base_url, session=None, auth=None):
+        self.client = Client(base_url, session, auth)
 
     @classmethod
-    def new(cls, *args, **kwargs):
-        return cls(Client(*args, **kwargs))
+    def from_raw_client(cls, client):
+        return cls(client.base_url, client.session, client.session.auth)
 
     def get_torrents(self):
         return [

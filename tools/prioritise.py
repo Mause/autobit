@@ -34,7 +34,7 @@ def prioritise(client, torrent, files):
 
 
 def main(pattern):
-    client = OClient.new(
+    client = OClient(
         'http://localhost:8081', auth=('admin', '20133')
     )
 
