@@ -64,13 +64,11 @@ class Torrent:
     @property
     def files(self):
         if self._files is None:
-            self.files = self.client.get_files([self])
+            self.files = self.client.get_files([self])[self]
         return self._files
 
     @files.setter
     def files(self, files):
-        if isinstance(files, dict):
-            files = files[self]
 
         if not files:
             return
