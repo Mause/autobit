@@ -51,7 +51,10 @@ class Torrent:
         return '<Torrent "{}">'.format(self.name)
 
     def __hash__(self):
-        return hash(self.hash)
+        return hash((self.__class__, self.hash))
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
 
     def __getattr__(self, name):
         value = self.meta[name]
@@ -102,6 +105,12 @@ class TorrentFile:
 
     def is_skipped(self):
         return self.data['priority'] == self.client.Priority.SKIP
+
+    def __hash__(self):
+        return hash((self.torrent, self.idx, self.name))
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
 
     @property
     def name(self):
