@@ -44,6 +44,17 @@ class Client:
 
     def get(self, params):
         self._ensure_token()
+
+        params = {
+            key: (
+                value.value
+                if isinstance(value, enum.Enum)
+                else
+                value
+            )
+            for key, value in params.items()
+        }
+
         r = self.session.get(self.base_url, params=params).json()
         r.pop('build')
         return r
