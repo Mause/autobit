@@ -175,9 +175,14 @@ class Client:
             'save-in': directory
         })
 
-    @property
-    @lru_cache()
-    def Priority(self):
+    def __getattr__(self, name):
+        if name == 'Priority':
+            self.Priority = self._make_Priority()
+            return self.Priority
+        else:
+            raise AttributeError
+
+    def _make_Priority(self):
         return type(
             'Priority',
             (),
