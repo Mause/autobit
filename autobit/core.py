@@ -194,6 +194,25 @@ class Client:
         else:
             raise AttributeError
 
+    def get_peers(self, torrent_hash):
+        torrent_peers = self.get({
+            'action': 'getpeers',
+            'hash': torrent_hash
+        }).get('peers')
+
+        if not torrent_peers:
+            raise NoSuchTorrent()
+
+        torrent_peers = iter(torrent_peers)
+        keys = self.keys('PEER_')
+        return {
+            hash: [
+                dict(zip(keys, peer))
+                for peer in peers
+            ]
+            for hash, peers in zip(torrent_peers, torrent_peers)
+        }
+
     def _make_Priority(self):
         return enum.IntEnum(
             'Priority',

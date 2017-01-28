@@ -41,7 +41,14 @@ class OClient():
             for hs, files in gen
         }
 
+    def get_peers(self, torrents):
+        torrents = {torrent.hash: torrent for torrent in torrents}
+        peers = self.client.get_peers(list(torrents))
 
+        return {
+            torrents[hash]: peers
+            for hash, peers in peers.items()
+        }
 
 
 class Torrent:
@@ -67,6 +74,9 @@ class Torrent:
         else:
             setattr(self, name, value)
             return value
+
+    def get_peers(self):
+        return self.client.get_peers([self])[self]
 
     @property
     def files(self):
