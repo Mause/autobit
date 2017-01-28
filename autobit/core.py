@@ -1,4 +1,5 @@
 import re
+import enum
 import json
 from functools import lru_cache
 from operator import itemgetter
@@ -183,12 +184,11 @@ class Client:
             raise AttributeError
 
     def _make_Priority(self):
-        return type(
+        return enum.IntEnum(
             'Priority',
-            (),
             {
                 k.replace('FILEPRIORITY_', ''): v
                 for k, v in self.consts().items()
                 if k.startswith('FILEPRIORITY_')
             }
-        )()
+        )
