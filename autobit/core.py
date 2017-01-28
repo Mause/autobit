@@ -147,10 +147,11 @@ class Client:
 
         files = iter(files)
         files = dict(zip(files, files))
+        keys = self.keys('FILE_')
 
         return {
             torrent_hash: [
-                dict(zip(self.keys('FILE_'), torrent_file))
+                dict(zip(keys, torrent_file))
                 for torrent_file in torrent_files
             ]
             for torrent_hash, torrent_files in files.items()
