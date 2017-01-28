@@ -57,9 +57,13 @@ class Torrent:
         return hash(self) == hash(other)
 
     def __getattr__(self, name):
-        value = self.meta[name]
-        setattr(self, name, value)
-        return value
+        try:
+            value = self.meta[name]
+        except KeyError:
+            raise AttributeError(name)
+        else:
+            setattr(self, name, value)
+            return value
 
     @property
     def files(self):
