@@ -22,6 +22,10 @@ class BittorrentError(Exception):
     pass
 
 
+class NoSuchTorrent(BittorrentError):
+    pass
+
+
 class Client:
     def __init__(self, base_url, session=None, auth=None):
         self.session = session or requests.Session()
@@ -136,7 +140,10 @@ class Client:
         files = self.get({
             'action': 'getfiles',
             'hash': torrent_hashes
-        })['files']
+        }).get('files')
+
+        if files is None:
+            raise NoSuchTorrent()
 
         files = iter(files)
         files = dict(zip(files, files))
