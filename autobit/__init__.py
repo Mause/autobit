@@ -97,6 +97,9 @@ class Torrent:
             [file.idx for file in files]
         )
 
+    def refresh(self):
+        self._files = None
+
 
 class TorrentFile:
     def __init__(self, client, torrent, idx, data):
@@ -113,6 +116,10 @@ class TorrentFile:
 
     def __eq__(self, other):
         return hash(self) == hash(other)
+
+    def refresh(self):
+        self.torrent.refresh()
+        self.data = self.torrent.files[self.idx].data
 
     @property
     def name(self):
