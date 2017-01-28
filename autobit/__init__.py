@@ -46,7 +46,10 @@ class OClient():
         peers = self.client.get_peers(list(torrents))
 
         return {
-            torrents[hash]: peers
+            torrents[hash]: [
+                Peer(peer)
+                for peer in peers
+            ]
             for hash, peers in peers.items()
         }
 
@@ -142,3 +145,23 @@ class TorrentFile:
 
     def __repr__(self):
         return '<TorrentFile "{}">'.format(self.name)
+
+
+class Peer:
+    def __init__(self, data):
+        self.data = data
+
+    def __getattr__(self, name):
+        try:
+            value = self.data[name]
+        except KeyError:
+            raise AttributeError(name)
+        else:
+            setattr(self, name, value)
+            return value
+
+    def __repr__(self):
+        return '<Peer "{}" "{}">'.format(
+            self.data['client'],
+            self.data['revdns'] or self.data['ip']
+        )
