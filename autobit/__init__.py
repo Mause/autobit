@@ -30,15 +30,18 @@ class OClient():
         torrents = {torrent.hash: torrent for torrent in torrents}
         gen = self.client.get_files(list(torrents)).items()
 
-        def internal():
-            for torrent_hash, files in gen:
-                torrent = torrents[torrent_hash]
+        for hs, files in gen:
+            torrents[hs].files = [
+                TorrentFile(self, torrents[hs], idx, torrentfile)
+                for idx, torrentfile in enumerate(files)
+            ]
 
-                torrent.files = files
+        return {
+            torrents[hs]: torrents[hs].files
+            for hs, files in gen
+        }
 
-                yield torrent, torrent.files
 
-        return dict(internal())
 
 
 class Torrent:
@@ -73,20 +76,7 @@ class Torrent:
 
     @files.setter
     def files(self, files):
-
-        if not files:
-            return
-
-        if isinstance(files[0], dict):
-            # this is if we're being passed a list of torrent files
-            # that haven't been wrapped in TorrentFile yet
-            self._files = [
-                TorrentFile(self.client, self, idx, torrentfile)
-                for idx, torrentfile in enumerate(files)
-            ]
-        else:
-            # this is if we're being passed a list of TorrentFile
-            self._files = files
+        self._files = files
 
     def set_priority(self, level, files):
         if not isinstance(files, list):
