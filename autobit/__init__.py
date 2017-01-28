@@ -106,7 +106,7 @@ class TorrentFile:
         self.data = data
 
     def is_skipped(self):
-        return self.data['priority'] == self.client.Priority.SKIP
+        return self.get_priority() == self.client.Priority.SKIP
 
     def __hash__(self):
         return hash((self.torrent, self.idx, self.name))
@@ -120,6 +120,9 @@ class TorrentFile:
 
     def is_finished(self):
         return self.data['downloaded'] == self.data['size']
+
+    def get_priority(self):
+        return self.client.Priority(self.data['priority'])
 
     def set_priority(self, level):
         self.torrent.set_priority(
