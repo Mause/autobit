@@ -86,7 +86,7 @@ class Client:
         constants = self.consts()
 
         return {
-            key[len(prefix):].lower(): value
+            key[len(prefix):]: value
             for key, value in constants.items()
             if key.startswith(prefix)
         }
@@ -95,7 +95,7 @@ class Client:
     def keys(self, prefix):
         constants = self.keys_with_values(prefix)
         return tuple(
-            key
+            key.lower()
             for key, _ in sorted(constants.items(), key=itemgetter(1))
         )
 
@@ -224,12 +224,14 @@ class Client:
             for hash, peers in zip(torrent_peers, torrent_peers)
         }
 
-    def _make_Priority(self):
+    def _make_enum_from_consts(self, name, prefix):
         return enum.IntEnum(
+            name,
+            self.keys_with_values(prefix)
+        )
+
+    def _make_Priority(self):
+        return self._make_enum_from_consts(
             'Priority',
-            {
-                k.replace('FILEPRIORITY_', ''): v
-                for k, v in self.consts().items()
-                if k.startswith('FILEPRIORITY_')
-            }
+            'FILEPRIORITY_'
         )
