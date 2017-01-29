@@ -82,17 +82,20 @@ class Client:
         }
 
     @lru_cache()
-    def keys(self, prefix):
+    def keys_with_values(self, prefix):
         constants = self.consts()
 
-        constants = {
-            key: value
+        return {
+            key[len(prefix):].lower(): value
             for key, value in constants.items()
             if key.startswith(prefix)
         }
 
+    @lru_cache()
+    def keys(self, prefix):
+        constants = self.keys_with_values(prefix)
         return tuple(
-            key[len(prefix):].lower()
+            key
             for key, _ in sorted(constants.items(), key=itemgetter(1))
         )
 
