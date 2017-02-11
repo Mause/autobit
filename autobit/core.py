@@ -3,6 +3,7 @@ import enum
 import json
 from functools import lru_cache
 from operator import itemgetter
+from contextlib import redirect_stderr
 
 import requests
 from slimit.parser import Parser
@@ -73,7 +74,10 @@ class Client:
     def consts(self):
         js = self.session.get(self.base_url + 'constants.js')
 
-        root = Parser().parse(js.text)
+        with redirect_stderr(open('NUL', 'w')):
+            parser = Parser()
+
+        root = parser.parse(js.text)
 
         constants = root.children()[0].children()[0].initializer.properties
         return {
