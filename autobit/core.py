@@ -53,6 +53,7 @@ class Client:
             base_url += '/gui/'
 
         self.base_url = base_url
+        self._cached_consts = None
 
     def _ensure_token(self):
         if 'token' in self.session.params:
@@ -83,8 +84,12 @@ class Client:
     def _get_msgs(self, key, keys):
         return make_items(keys, self.get({'list': 1, 'getmsg': 1})[key])
 
-    @lru_cache()
     def consts(self):
+        if self._cached_consts is None:
+            self._cached_consts = self._consts()
+        return self._cached_consts
+
+    def _consts(self):
         js = self.session.get(self.base_url + 'constants.js')
 
         with redirect_stderr(open('NUL', 'w')):
