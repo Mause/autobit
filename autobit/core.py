@@ -27,6 +27,15 @@ class NoSuchTorrent(BittorrentError):
     pass
 
 
+def paired(iterable):
+    # given
+    # [1, 2, 3, 4, 5, 6]
+    # returns an iterator yielding
+    # [(1, 2), (3, 4), (5, 6)]
+    iterable = iter(iterable)
+    return zip(iterable, iterable)
+
+
 class Client:
     def __init__(self, base_url, session=None, auth=None):
         self.session = session or requests.Session()
@@ -152,8 +161,6 @@ class Client:
         if files is None:
             raise NoSuchTorrent()
 
-        files = iter(files)
-        files = dict(zip(files, files))
         keys = self.keys('FILE_')
 
         return {
@@ -162,6 +169,7 @@ class Client:
                 for torrent_file in torrent_files
             ]
             for torrent_hash, torrent_files in files.items()
+            for torrent_hash, torrent_files in paired(files)
         }
 
     def get_rss_feeds(self):
@@ -218,14 +226,13 @@ class Client:
         if not torrent_peers:
             raise NoSuchTorrent()
 
-        torrent_peers = iter(torrent_peers)
         keys = self.keys('PEER_')
         return {
             hash: [
                 dict(zip(keys, peer))
                 for peer in peers
             ]
-            for hash, peers in zip(torrent_peers, torrent_peers)
+            for hash, peers in paired(torrent_peers)
         }
 
     def _make_enum_from_consts(self, name, prefix):
