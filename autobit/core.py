@@ -219,7 +219,7 @@ class Client:
             self.Priority = self._make_Priority()
             return self.Priority
         else:
-            raise AttributeError
+            raise AttributeError(name)
 
     def get_peers(self, torrent_hash):
         torrent_peers = self.get({
