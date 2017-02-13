@@ -5,7 +5,7 @@ from fnmatch import fnmatch
 from autobit import OClient
 
 
-def prioritise(client, torrent, files):
+def prioritise_single(client, torrent, files):
     files = [
         file
         for file in files
@@ -47,7 +47,7 @@ def main(pattern):
         return
 
     for torrent, files in client.get_files(torrents).items():
-        prioritise(client, torrent, files)
+        prioritise_single(client, torrent, files)
 
 
 if __name__ == '__main__':
