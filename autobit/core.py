@@ -36,6 +36,13 @@ def paired(iterable):
     return zip(iterable, iterable)
 
 
+def make_items(keys, items):
+    return [
+        dict(zip(keys, item))
+        for item in items
+    ]
+
+
 class Client:
     def __init__(self, base_url, session=None, auth=None):
         self.session = session or requests.Session()
@@ -74,10 +81,7 @@ class Client:
         return r
 
     def _get_msgs(self, key, keys):
-        return [
-            dict(zip(keys, rf))
-            for rf in self.get({'list': 1, 'getmsg': 1})[key]
-        ]
+        return make_items(keys, self.get({'list': 1, 'getmsg': 1})[key])
 
     @lru_cache()
     def consts(self):
@@ -162,13 +166,8 @@ class Client:
             raise NoSuchTorrent()
 
         keys = self.keys('FILE_')
-
         return {
-            torrent_hash: [
-                dict(zip(keys, torrent_file))
-                for torrent_file in torrent_files
-            ]
-            for torrent_hash, torrent_files in files.items()
+            torrent_hash: make_items(keys, torrent_files)
             for torrent_hash, torrent_files in paired(files)
         }
 
@@ -228,10 +227,7 @@ class Client:
 
         keys = self.keys('PEER_')
         return {
-            hash: [
-                dict(zip(keys, peer))
-                for peer in peers
-            ]
+            hash: make_items(keys, peers)
             for hash, peers in paired(torrent_peers)
         }
 
