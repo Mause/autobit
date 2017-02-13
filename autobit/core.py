@@ -161,7 +161,7 @@ class Client:
             "f": file_indices
         })
 
-    def get_files(self, *torrent_hashes):
+    def get_files(self, torrent_hashes):
         files = self.get({
             'action': 'getfiles',
             'hash': torrent_hashes
