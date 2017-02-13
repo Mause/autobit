@@ -33,7 +33,7 @@ def prioritise_single(client, torrent, files):
     torrent.set_priority(client.Priority.NORMAL, files[idx+1:idx+5])
 
 
-def main(pattern):
+def main(args):
     client = OClient(
         'http://localhost:8081', auth=('admin', '20133')
     )
@@ -41,7 +41,7 @@ def main(pattern):
     torrents = [
         torrent
         for torrent in client.get_torrents()
-        if fnmatch(torrent.name, pattern)
+        if fnmatch(torrent.name, args.pattern)
     ]
     if not torrents:
         return
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     if args.repeat is not None:
         while True:
-            main(args.pattern)
+            main(args)
             time.sleep(args.repeat)
     else:
-        main(args.pattern)
+        main(args)
